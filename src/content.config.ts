@@ -1,5 +1,6 @@
 import { glob } from 'astro/loaders';
 import { defineCollection, z } from 'astro:content';
+const { DEV_API_KEY, DEV_TO_API_URL } = import.meta.env;
 
 const blog = defineCollection({
 	// Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -15,4 +16,33 @@ const blog = defineCollection({
 	}),
 });
 
-export const collections = { blog };
+const devTo = defineCollection({
+	loader: async () => {
+        const headers = new Headers({
+            "api-key": DEV_API_KEY,
+        });
+        const posts = await fetch(`${DEV_TO_API_URL}articles?username=jmr85`, {
+            headers: headers
+        }).then(res => res.json());
+        
+        return posts.map((post: any) => ({
+			id: post.slug,
+            title: post.title,
+            description: post.description,
+            pubDate: new Date(post.published_at),
+            updatedDate: post.edited_at ? new Date(post.edited_at) : null,
+            heroImage: post.cover_image || post.social_image,
+			url: post.url,
+        }));
+    },
+    schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        pubDate: z.coerce.date(),
+        updatedDate: z.coerce.date().optional(),
+        heroImage: z.string().nullable(),
+		url: z.string(),
+    }),
+  });
+
+export const collections = { blog, devTo };
