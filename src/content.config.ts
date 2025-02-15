@@ -21,7 +21,7 @@ const devTo = defineCollection({
         const headers = new Headers({
             "api-key": DEV_API_KEY,
         });
-        const posts = await fetch(`${DEV_TO_API_URL}articles?username=jmr85`, {
+        const posts = await fetch(`${DEV_TO_API_URL}articles/me/published`, {
             headers: headers
         }).then(res => res.json());
         
