@@ -30,9 +30,10 @@ const devTo = defineCollection({
             title: post.title,
             description: post.description,
             pubDate: new Date(post.published_at),
-            updatedDate: post.edited_at ? new Date(post.edited_at) : null,
+            updatedDate: post.edited_at,
             heroImage: post.cover_image || post.social_image,
 			url: post.url,
+            content: post.body_markdown,
         }));
     },
     schema: z.object({
@@ -40,8 +41,9 @@ const devTo = defineCollection({
         description: z.string(),
         pubDate: z.coerce.date(),
         updatedDate: z.coerce.date().optional(),
-        heroImage: z.string().nullable(),
+        heroImage: z.string().optional(),
 		url: z.string(),
+        content: z.string(),
     }),
   });
 

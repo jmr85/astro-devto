@@ -101,10 +101,7 @@ const posts = [...astroPosts, ...devtoPosts]
 					{
 						posts.map((post) => (
 							<li>
-								<a 
-									href={post.collection === "devTo" ? post.data.url : `/blog/${post.id}/`}
-									target={post.collection === "devTo" ? "_blank" : "_self"}
-								>
+								<a href={`/blog/${post.id}/`}>
 									<img width={720} height={360} src={post.data.heroImage} alt="" />
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">

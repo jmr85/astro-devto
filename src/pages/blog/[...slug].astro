@@ -2,20 +2,38 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
+import { marked } from 'marked';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	const blogPosts = await getCollection('blog');
+    const mediumPosts = await getCollection('devTo') || [];
+    const posts = [...blogPosts, ...mediumPosts]; 
 	return posts.map((post) => ({
 		params: { slug: post.id },
 		props: post,
 	}));
 }
-type Props = CollectionEntry<'blog'>;
+type Props = CollectionEntry<'blog'> | CollectionEntry<'devTo'>;
 
 const post = Astro.props;
+
+const isDevto = post.collection === "devTo";
+
+const htmlContent = marked.parse(isDevto ? post.data.content : '');
+
 const { Content } = await render(post);
 ---
 
 <BlogPost {...post.data}>
+	<!-- renders local Markdown content -->
 	<Content />
+	<!-- renders the Devto post content directly as HTML -->
+    <Fragment set:html={htmlContent } />
+    <!-- renders a link to the Devto post at the end of the content -->
+    <a 
+        href={isDevto ? post.data.url: ''} 
+        target="_blank"
+    >
+        {isDevto && post.data.url}
+    </a>
 </BlogPost>
